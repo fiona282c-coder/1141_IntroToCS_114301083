@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>數字猜謎遊戲</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        #result-display {
+            margin-top: 20px;
+            min-height: 200px;
+        }
+        #result-display img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>114301083_Number Guessing Game</h1>
+
+    <div id="result-display">
+        <p>點擊下方按鈕開始遊戲。</p>
+        <button onclick="startGame()">開始猜謎</button>
+    </div>
+
+    <script>
+      
+        const CORRECT_IMAGE_PATH = 'images2/correct.jpg'; 
+        const WRONG_IMAGE_PATH = 'images2/wrong.jpg'; 
+
+        let answer = 0;
+        let chances = 7;
+        let minRange = 1;
+        let maxRange = 100;
+
+        const resultDisplay = document.getElementById('result-display');
+        
+        function startGame() {
+            chances = 7;
+            minRange = 1;
+            maxRange = 100;
+            answer = Math.floor(Math.random() * 100) + 1; 
+
+            resultDisplay.innerHTML = ''; 
+
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (chances <= 0) {
+                endGame(false);
+                return;
+            }
+
+            const promptMessage = `請輸入 ${minRange} 到 ${maxRange} 之間的整數。\n\n您還有 ${chances} 次機會。`;
+
+            const input = window.prompt(promptMessage);
+
+            if (input === null) {
+                resultDisplay.innerHTML = '<p>遊戲已取消。點擊開始按鈕重新開始。</p><button onclick="startGame()">開始猜謎</button>';
+                return;
+            }
+
+            const trimmedInput = input.trim();
+            const guess = Number(trimmedInput);
+
+            if (trimmedInput === "" || isNaN(guess)) {
+                window.alert("無效輸入！請輸入一個數字。");
+                gameLoop(); 
+                return;
+            }
+
+            if (guess < minRange || guess > maxRange) {
+                window.alert(`輸入數字 ${guess} 超出有效範圍 ${minRange} 到 ${maxRange} ！`);
+                gameLoop(); 
+                return;
+            }
+            
+            chances--; 
+
+            if (guess === answer) {
+                endGame(true, answer);
+            } else if (guess < answer) {
+                window.alert(`您猜的 ${guess} 太小了！`);
+                minRange = guess + 1;
+                gameLoop();
+            } else {
+                window.alert(`您猜的 ${guess} 太大了！`);
+                maxRange = guess - 1;
+                gameLoop();
+            }
+        }
+
+        function endGame(isWin, finalAnswer) {
+            if (isWin) {
+                window.alert(`恭喜你答對了！正確答案是 ${finalAnswer}`);
+                resultDisplay.innerHTML = `<img src="${CORRECT_IMAGE_PATH}" alt="猜對了">`;
+            } else {
+                window.alert(`機會用完了，遊戲結束！正確答案是 ${answer}`);
+                resultDisplay.innerHTML = `<img src="${WRONG_IMAGE_PATH}" alt="次數用完">`;
+            }
+
+            resultDisplay.innerHTML += '<p>遊戲結束。</p><button onclick="startGame()">重新開始</button>';
+        }
+
+        resultDisplay.innerHTML = '<p>點擊下方按鈕開始遊戲。</p><button onclick="startGame()">開始猜謎</button>';
+
+    </script>
+</body>
+</html>
